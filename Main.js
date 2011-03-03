@@ -16,7 +16,7 @@ var Main = {
 
    /*
     * Implementations of various, useful variables and pseudo-properties
-    * for the Main class.
+    * for the Main class. Only Main.Preloader and Main.$ are defined here.
     */
     
   // Read-only.
@@ -33,12 +33,12 @@ var Main = {
   // The Init function, used for initialization. By default, called by window.onload.
   Init : function ()
   {
-    this.Preloader.LoadBasicFiles();
+    this.Preloader.LoadFirstFiles();
   },
 
   /* 
-   * Inner class implementations. The next three are actually implemented
-   * in other files.
+   * Inner class implementations. Many of the following are implemented
+   * in different files. Only 
    */
 
   // Implements globally-necessarily constants. This is implemented in
@@ -97,7 +97,9 @@ var Main = {
 
     // The basic functions used by the Preloader.
 
-    LoadBasicFiles : function ()
+    LoadFirstFiles : function ()
+    // This is used to to load the files listed in $_Load_First, as they are the most
+    // important ones to the functioning of the rest of the library.
     {
       // Get the <head> element of the document. This is where new script elements will
       // be placed.
@@ -143,8 +145,15 @@ var Main = {
     },
 
     LoadOtherFiles : function ()
+    // This is used to load the rest of the files, the ones not specified in $_Load_First.
+    // This is separated, as it makes use of the Main.Loader.Script class, which makes it
+    // easier to load new files.
     {
       Main.Loader.Script.oncomplete = function () {
+        // Once the files have finished loading, Main.onready will be called, if
+        // it is defined. Additionally, Main.Loader.Script.oncomplete will be called
+        // so that Main.onready will not be called additional times if new files are
+        // loaded.
         if(Main.onready)
           Main.onready.call();
 
@@ -152,6 +161,9 @@ var Main = {
       };
 
       for(var i in this)
+      // Look through the variables defined for Main.Preloader. If they are not in
+      // the $_Ignore array and not in the $_Load_First array, then begin loading
+      // them.
       {
         if((this.$_Ignore.indexOf(i) != -1) || (this.$_Load_First.indexOf(i) != -1))
           continue;
@@ -159,6 +171,7 @@ var Main = {
         Main.Loader.Script.Queue(this[i]);
       }
 
+      // Once all the files have been queued up, being processing them.
       Main.Loader.Script.Process();
     }
   },
@@ -246,8 +259,6 @@ if ( !Function.prototype.bind ) {
     return bound;
   };
 }
-
-var $_NO_INITIALIZE_ON_WINDOW_ONLOAD = false;
 
 if(((typeof $_NO_INITIALIZE_ON_WINDOW_ONLOAD) == "undefined") || !$_NO_INITIALIZE_ON_WINDOW_ONLOAD)
 // If the variable $_NO_BEGIN_ON_WINDOW_ONLOAD is defined, then
