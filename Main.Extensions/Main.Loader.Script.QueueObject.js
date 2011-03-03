@@ -38,7 +38,7 @@ Main.Loader.Script.QueueObject.prototype = {
   get loaded()     { return this.state == Main.Constant.LOAD.LOADED;     },
   get timed_out()  { return this.state == Main.Constant.LOAD.TIMED_OUT;  },
 
-  get processed()  { return this.loaded || this.processed; },
+  get processed()  { return this.loaded || this.timed_out; },
 
   /*
    * The class functions for Main.Loader.Script.QueueObject.

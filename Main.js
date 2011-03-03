@@ -80,7 +80,7 @@ var Main = {
 
     // A list of things to ignore, for the LoadBasicFiles and LoadOtherFiles
     // functions. These are things that are not scripts.
-    $_Ignore : ["$_Load_First", "$_Ignore", "LoadBasicFiles", "LoadOtherFiles", "timeout"],
+    $_Ignore : ["$_Load_First", "$_Ignore", "LoadFirstFiles", "LoadOtherFiles", "timeout"],
 
     // Wait 5 seconds until it considers a timeout.
     timeout : 5000,
@@ -259,6 +259,8 @@ if ( !Function.prototype.bind ) {
     return bound;
   };
 }
+
+var $_NO_INITIALIZE_ON_WINDOW_ONLOAD = false;
 
 if(((typeof $_NO_INITIALIZE_ON_WINDOW_ONLOAD) == "undefined") || !$_NO_INITIALIZE_ON_WINDOW_ONLOAD)
 // If the variable $_NO_BEGIN_ON_WINDOW_ONLOAD is defined, then
