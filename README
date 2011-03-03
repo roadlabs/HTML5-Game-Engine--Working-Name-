@@ -1,0 +1,69 @@
+/*
+ * File Name: README
+ * Date Written: March 3, 2011
+ * Written By: Timothy "Popisfizzy" Reilly
+ */
+
+-- CONTENTS --
+1. Introduction
+2. File Header Format
+  2.1. Format Description
+
+--------------
+
+-- 1. Introduction --
+
+This is just a basic README file for the unnamed HTML5 game engine
+I am currently developing, written in Javascript and utilizing the
+features provided by HTML5. Additionally, there will eventually be
+a server-side component, likely written in PHP, though this could
+change or be modified.
+
+-- 2. File Header Format --
+
+Every file should include the following in the beginning, written in
+the format described:
+
+    /*
+     * File Name: Name.ext
+     * Date Written: Month DD, YYYY
+     * Date Last Updated: Month DD, YYYY
+     * Written By: Contributor One, Contributor
+     *   Two
+     * Modified By: Contributor "Alias" Three,
+     *   Contributor Four, Contributor "Alias Two"
+     *   Five
+     * Extends: File.ext
+     * Implementations: Implementation.ext
+     * Dependencies: Dependencies.ext, Foo.ext
+     */
+
+  -- 2.1. Format Description --
+
+  o   File Name -- This is the name of the file.
+  o   Date Written -- The date the file was originally written.
+  o   Date Last Updated -- The date the file was last updated. Can be
+      excluded if it is the same date as date written.
+  o   Written By -- The contributors it was written by.
+  o   Modified By -- The contributors who have made modifications to
+      the file.
+  o   Extends -- The file that includes code the current code extends.
+      This should only include immediate extensions. If the current
+      code extends code in another file, and that code also extends
+      something in a different, third file, but the current code does
+      not extend that file, then it should not be included. This can
+      be excluded if it does not extend anything.
+  o   Implementations -- A list of files that implement features
+      alluded to in the current file. Can be excluded if unecessary.
+  o   Dependencies -- A list of files that this file is dependent on
+      May optionally include code from the Extends section. Can be
+      excluded if uneccesary.
+
+  Additionally, the following must be adhered to for information about
+  the above:
+
+  o   File names must include the extension. Listing the folder it is
+      in is optional.
+  o   All names must take the form 'First [Middle] ["Alias"] Last [, Title]'
+      or "Alias". Anything in brackets may be ommited.
+  o   Dates are always in the format Month DD, YYYY
