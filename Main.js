@@ -1,7 +1,7 @@
 /*
  * File Name: Main.js
- * Date Written: February 28, 2011.
- * Date Last Updated: March 3, 2011
+ * Date Written: February 28, 2011
+ * Date Last Updated: March 7, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Implementations: Main.Constant.js,
  *   Main.Default.js, Main.Browser.js,
@@ -18,7 +18,7 @@ var Main = {
     * Implementations of various, useful variables and pseudo-properties
     * for the Main class. Only Main.Preloader and Main.$ are defined here.
     */
-    
+
   // Read-only.
   get directory()
   {
@@ -65,6 +65,19 @@ var Main = {
     Sound : null       // Implemented in Main.Loader.Sound.js
   },
 
+  // Used to access storage systems. 
+  Storage : {
+    Local  : null,
+    Server : null
+  },
+
+  // WebSockets to connect to a server.
+  Socket : null,
+
+  Classes : { }, // Allows for an implementation of specific classes. This is
+                 // expanded upon in various other files. It's made an object
+                 // for simplicity.
+
   // This indicates files that are to be loaded when the page is finished
   // loading. By default, the Loader.Script class and the Constant class
   // are *always* loaded first, and then the Loader.Script class are used
@@ -88,15 +101,15 @@ var Main = {
     // The three basic files needed.
 
     $_Main_Constants                 : "Main.Extensions/Main.Constant.js",
+
     $_Main_Loader_Script             : "Main.Extensions/Loader/Script/Main.Loader.Script.js",
     $_Main_Loader_Script_QueueObject : "Main.Extensions/Loader/Script/Main.Loader.Script.QueueObject.js",
 
     // Some other files that will also be loaded.
 
     $_Main_Browser                  : "Main.Extensions/Main.Browser.js",
-
     $_Main_Loader_Image             : "Main.Extensions/Loader/Image/Main.Loader.Image.js",
-    $_Main_Loader_Image_QueueObject : "Main.Extensions/Loader/Image/Main.Loader.Image.QueueObject.js",
+    $_Main_Classes_Map              : "Main.Classes/Map/Map.js",
 
     // The basic functions used by the Preloader.
 
@@ -158,7 +171,7 @@ var Main = {
         // so that Main.onready will not be called additional times if new files are
         // loaded.
         if(Main.onready)
-          Main.onready.call();
+          Main.onready();
 
         Main.Loader.Script.oncomplete = null;
       };
@@ -240,6 +253,34 @@ var Main = {
 
       return false;
     }
+  },
+
+  /*
+   * Miscellaneous class functions.
+   */
+
+  includes : function (file, callback)
+  // This indicates a file to load upon the loading of another file.
+  {
+    if(!this.Loader.Script)
+      return null;
+
+    var QueueObject = this.Loader.Script.Queue(file);
+    QueueObject.onload = callback;
+
+    this.Loader.Script.Process(QueueObject);    
+  },
+
+  onfileload : function (f)
+  // Places this at the bottom of a file to be loaded. When it is
+  // reached, the function f will be processed. This is good for some
+  // startup or maintenance code that needs to be run for that
+  // particular file.
+  {
+    if(f instanceof Function)
+      return f.call();
+
+    return null;
   }
 }
 

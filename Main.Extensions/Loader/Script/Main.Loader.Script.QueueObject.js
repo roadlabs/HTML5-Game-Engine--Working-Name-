@@ -1,6 +1,6 @@
 /*
  * File Name: Main.Loader.ScriptQueue.js
- * Date Written: March 2, 2011.
+ * Date Written: March 2, 2011
  * Date Last Updated: March 3, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Extends: Main.Loader.Script.js
@@ -35,7 +35,7 @@ Main.Loader.Script.QueueObject.prototype = {
 
   get processing() { return this.state == Main.Constant.LOAD.PROCESSING; },
   get loaded()     { return this.state == Main.Constant.LOAD.LOADED;     },
-  get timedout()  { return this.state == Main.Constant.LOAD.TIME_OUT;    },
+  get timedout()   { return this.state == Main.Constant.LOAD.TIME_OUT;   },
 
   // Multi-property checker. Indicates if the script has finished processing,
   // meaning either it loaded or it timed out.

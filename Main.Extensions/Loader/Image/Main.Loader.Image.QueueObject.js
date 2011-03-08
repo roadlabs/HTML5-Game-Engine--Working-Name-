@@ -1,6 +1,6 @@
 /*
  * File Name: Main.Loader.Image.QueueObject.js
- * Date Written: March 3, 2011.
+ * Date Written: March 3, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Main.js
  * Extends: Main.Loader.Image.js

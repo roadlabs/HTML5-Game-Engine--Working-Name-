@@ -1,6 +1,6 @@
 /*
  * File Name: Main.Browser.js
- * Date Written: February 28, 2011.
+ * Date Written: February 28, 2011
  * Date Last Updated: March 1, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Main.js
@@ -205,5 +205,5 @@ Main.Browser = {
     }
 
     return false;
-  },
+  }
 }

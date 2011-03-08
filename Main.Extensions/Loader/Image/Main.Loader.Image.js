@@ -1,10 +1,13 @@
 /*
  * File Name: Main.Loader.Image.js
- * Date Written: March 3, 2011.
+ * Date Written: March 3, 2011
+ * Date Last Updated: March 7, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Main.js
  * Implementations: Main.Loader.Image.QueueObject.js
  */
+
+Main.includes("Main.Extensions/Loader/Image/Main.Loader.Image.QueueObject.js");
 
 Main.Loader.Image = {
 
