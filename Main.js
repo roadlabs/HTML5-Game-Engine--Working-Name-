@@ -1,7 +1,7 @@
 /*
  * File Name: Main.js
  * Date Written: February 28, 2011
- * Date Last Updated: March 7, 2011
+ * Date Last Updated: March 8, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Implementations: Main.Constant.js,
  *   Main.Default.js, Main.Browser.js,
@@ -38,7 +38,7 @@ var Main = {
 
   /* 
    * Inner class implementations. Many of the following are implemented
-   * in different files. Only 
+   * in different files. 
    */
 
   // Implements globally-necessarily constants. This is implemented in
@@ -55,8 +55,8 @@ var Main = {
   // Main.Browser.js.
   Browser : null,
 
-  // This is used to implement three dynamic-content loaders, for Javascript
-  // scripts, images, and sound.
+  // This is used to implement four dynamic-content loaders, for Javascript
+  // scripts, CSS stylesheets, images, and sound.
 
   Loader : {
     Script : null,     // Implemented in Main.Loader.Script.js.
@@ -65,7 +65,11 @@ var Main = {
     Sound : null       // Implemented in Main.Loader.Sound.js
   },
 
-  // Used to access storage systems. 
+  // Used to access storage systems. Both are user-defined, and are simply
+  // here to allow for a central way to access them. Local would presumably
+  // use the localStorage feature of HTML5, and Server would make use of a
+  // server to store and update information, either through AJAX queries or
+  // through sockets.
   Storage : {
     Local  : null,
     Server : null

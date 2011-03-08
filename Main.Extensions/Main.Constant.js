@@ -1,7 +1,7 @@
 /*
  * File Name: Main.Constants.js
  * Date Written: February 28, 2011
- * Date Last Updated: March 7, 2011
+ * Date Last Updated: March 8, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Main.js
  */
@@ -151,7 +151,7 @@ Main.Constant = {
     SEVEN : 35,
     EIGHT : 36,
     NINE  : 37,
-    ZERO   : 38,
+    ZERO  : 38,
 
     NUMPAD_ONE   : 39,
     NUMPAD_TWO   : 40,
@@ -230,6 +230,8 @@ Main.Constant = {
 
     KEY_STATES : [], // An array storing all the key state constants.
     KEYS : [], // An array storing all the key constants.
+    TEXT_KEYS : [], // A set of keys which will be pressed to type
+                    // text, or to modify text.
     CONSTANTS : [], // An array storing all the keyboard constants.
   },
 
@@ -324,8 +326,24 @@ Main.onfileload(function () {
                    K.SPACE,        K.ENTER,           K.TAB,     K.BACKSPACE,    K.CAPS_LOCK,
              K.SCROLL_LOCK,     K.NUM_LOCK,        K.INSERT,          K.HOME,      K.PAGE_UP,
                K.PAGE_DOWN,          K.END,        K.DELETE,            K.UP,         K.DOWN,
-                    K.LEFT,        K.RIGHT,  K.PRINT_SCREEN,        K.PAUSE,           K.ESC ];
+                    K.LEFT,        K.RIGHT,  K.PRINT_SCREEN,         K.PAUSE,          K.ESC ];
   K.CONSTANTS = K.KEY_STATES.concat(K.KEYS);
+
+  K.TEXT_KEYS = [      K.A,            K.B,             K.C,             K.D,            K.E,
+                       K.F,            K.G,             K.H,             K.I,            K.J,
+                       K.K,            K.L,             K.M,             K.N,            K.O,
+                       K.P,            K.Q,             K.R,             K.S,            K.T,
+                       K.U,            K.V,             K.W,             K.X,            K.Y,
+                       K.Z,          K.ONE,           K.TWO,         K.THREE,         K.FOUR,
+                    K.FIVE,          K.SIX,         K.SEVEN,         K.EIGHT,         K.NINE,
+                    K.ZERO,   K.NUMPAD_ONE,    K.NUMPAD_TWO,  K.NUMPAD_THREE,  K.NUMPAD_FOUR,
+             K.NUMPAD_FIVE,   K.NUMPAD_SIX,  K.NUMPAD_SEVEN,  K.NUMPAD_EIGHT,  K.NUMPAD_NINE,
+             K.NUMPAD_ZERO, K.NUMPAD_SLASH,  K.NUMPAD_POINT,         K.TILDE,       K.HYPHEN,
+             K.EQUALS_SIGN, K.LEFT_BRACKET, K.RIGHT_BRACKET,     K.BACKSLASH,    K.SEMICOLON,
+              K.APOSTROPHE,        K.COMMA,        K.PERIOD,  K.FORWARDSLASH,        K.SHIFT,
+                   K.SPACE,        K.ENTER,           K.TAB,     K.BACKSPACE,    K.CAPS_LOCK,
+                  K.INSERT,       K.DELETE,          K.LEFT,         K.RIGHT,           K.UP,
+                    K.DOWN];
 
   /*
    * Next generate similar data for Main.Constant.MOUSE.

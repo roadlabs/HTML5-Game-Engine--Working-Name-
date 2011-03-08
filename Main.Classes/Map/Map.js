@@ -1,7 +1,7 @@
 /*
  * File Name: Map.js
  * Date Written: March 6, 2011
- * Date Last Updated: March 7, 2011
+ * Date Last Updated: March 8, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Main.js
  * Implementations: Map.Location.js,
@@ -143,14 +143,9 @@ Main.Classes.Map.prototype = {
     get Origin()
     // The Origin of a map will be considered the point of the map closest
     // to (1, 1, 1). This means that it is the portion of a particular axis
-    // closest to 0.
+    // closest to 1.
     {
-      if(this.High <= 1)
-        return this.High;
-      if((this.Low <= 1) && (1 <= this.High))
-        return 1;
-      if(this.Low <= 1)
-        return this.Low;
+      return Math.max(Math.min(this.High, 1), this.Low);
     }
   },
 
@@ -169,18 +164,12 @@ Main.Classes.Map.prototype = {
       return (this.parent.y_axis.high = j);
     },
 
-    get Origin()
-    {
-      if(this.High <= 1)
-        return this.High;
-      if((this.Low <= 1) && (1 <= this.High))
-        return 1;
-      if(this.Low <= 1)
-        return this.Low;
-    }
+    get Origin() { return Math.max(Math.min(this.High, 1), this.Low); }
   },
 
   z : {
+    parent : null,
+
     get Low()  { return this.parent.z_axis.low;  },
     get High() { return this.parent.z_axis.high; },
 
@@ -193,16 +182,10 @@ Main.Classes.Map.prototype = {
       return (this.parent.z_axis.high = k);
     },
 
-    get Origin()
-    {
-      if(this.High <= 1)
-        return this.High;
-      if((this.Low <= 1) && (1 <= this.High))
-        return 1;
-      if(this.Low <= 1)
-        return this.Low;
-    }
+    get Origin() { return Math.max(Math.min(this.High, 1), this.Low); }
   },
+
+  // These get the span of the x, y, and z axes, respectively.
 
   get width()
   {
@@ -235,9 +218,12 @@ Main.Classes.Map.prototype = {
       return (z_1 - z_0);
   },
 
+  // These are the Map.Location objects at the bottom-left and top-right corners of the
+  // map, respectively.
   get LowCorner()  { return this.Locate( this.x.Low,  this.y.Low,  this.z.Low);       },
   get HighCorner() { return this.Locate(this.y.High, this.y.High, this.z.High);       },
 
+  // This is the Map.Location object located closest to (1, 1, 1).
   get Origin()     { return this.Locate(this.x.Origin, this.y.Origin, this.z.Origin); },
 
   /*
@@ -265,6 +251,8 @@ Main.Classes.Map.prototype = {
   },
 
   GetZLayer : function (z)
+  // This returns a two-dimensional array in (x, y) format with every Map.Location
+  // object on a particular z level.
   {
     var ZLayer = this.Map[z];
 
@@ -273,7 +261,7 @@ Main.Classes.Map.prototype = {
 
     var LayerArray = [];
     for(var x = 0; x <= ZLayer.length; x ++)
-      LayerArray[x] = ZLayer[x].slice;
+      LayerArray[x] = ZLayer[x].slice();
 
     return LayerArray;
   },
@@ -383,20 +371,9 @@ Main.Classes.Map.prototype = {
   // outside of the bounds of the map, places it at the nearest number
   // within the map.
   {
-    if(x < this.x.Low)
-      x = this.x.Low;
-    else if(x > this.x.High)
-      x = this.x.High;
-
-    if(y < this.y.Low)
-      y = this.y.Low;
-    else if(y > this.y.High)
-      y = this.y.High;
-
-    if(z < this.z.Low)
-      z = this.z.Low;
-    else if(z > this.z.High)
-      z = this.z.High;
+    x = Math.max(this.x.Low, Math.min(x, this.x.High))
+    y = Math.max(this.y.Low, Math.min(y, this.y.High))
+    z = Math.max(this.z.Low, Math.min(z, this.z.High))
 
     return [x, y, z];
   }
