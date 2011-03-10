@@ -89,18 +89,26 @@ var Main = {
   // Loader.Script classes make use of some constants defined there.
 
   Preloader : {
+    /*
+     * Preloader variables and constant arrays.
+     */
+
     // Scripts that will be loaded in the LoadBasicFiles function.
-    $_Load_First : ["$_Main_Constants",
-                    "$_Main_Loader_Script",
-                    "$_Main_Loader_Script_QueueObject"
-                   ],
+    _Load_First : ["$_Main_Constants",
+                   "$_Main_Loader_Script",
+                   "$_Main_Loader_Script_QueueObject"
+                  ],
 
     // A list of things to ignore, for the LoadBasicFiles and LoadOtherFiles
     // functions. These are things that are not scripts.
-    $_Ignore : ["$_Load_First", "$_Ignore", "LoadFirstFiles", "LoadOtherFiles", "timeout"],
+    _Ignore : ["_Load_First", "_Ignore", "LoadFirstFiles", "LoadOtherFiles", "timeout"],
 
     // Wait 5 seconds until it considers a timeout.
     timeout : 5000,
+
+    /*
+     * Files to be loaded.
+     */
 
     // The three basic files needed.
 
@@ -114,11 +122,12 @@ var Main = {
     $_Main_Browser                  : "Main.Extensions/Main.Browser.js",
     $_Main_Loader_Image             : "Main.Extensions/Loader/Image/Main.Loader.Image.js",
     $_Main_Classes_Map              : "Main.Classes/Map/Map.js",
+    $_Main_Classes_Player           : "Main.Classes/Player/Player.js",
 
     // The basic functions used by the Preloader.
 
     LoadFirstFiles : function ()
-    // This is used to to load the files listed in $_Load_First, as they are the most
+    // This is used to to load the files listed in _Load_First, as they are the most
     // important ones to the functioning of the rest of the library.
     {
       // Get the <head> element of the document. This is where new script elements will
@@ -138,8 +147,8 @@ var Main = {
 
       for(var i in this)
       {
-        if(this.$_Load_First.indexOf(i) != -1)
-        // Load all the files indicated by $_Load_First.
+        if(this._Load_First.indexOf(i) != -1)
+        // Load all the files indicated by _Load_First.
         {
           // Create the element and set its variables.
           var script = document.createElement("script");
@@ -165,7 +174,7 @@ var Main = {
     },
 
     LoadOtherFiles : function ()
-    // This is used to load the rest of the files, the ones not specified in $_Load_First.
+    // This is used to load the rest of the files, the ones not specified in _Load_First.
     // This is separated, as it makes use of the Main.Loader.Script class, which makes it
     // easier to load new files.
     {
@@ -182,10 +191,10 @@ var Main = {
 
       for(var i in this)
       // Look through the variables defined for Main.Preloader. If they are not in
-      // the $_Ignore array and not in the $_Load_First array, then begin loading
+      // the _Ignore array and not in the _Load_First array, then begin loading
       // them.
       {
-        if((this.$_Ignore.indexOf(i) != -1) || (this.$_Load_First.indexOf(i) != -1))
+        if((this._Ignore.indexOf(i) != -1) || (this._Load_First.indexOf(i) != -1))
           continue;
 
         Main.Loader.Script.Queue(this[i]);
@@ -272,7 +281,7 @@ var Main = {
     var QueueObject = this.Loader.Script.Queue(file);
     QueueObject.onload = callback;
 
-    this.Loader.Script.Process(QueueObject);    
+    this.Loader.Script.Process(QueueObject);  
   },
 
   onfileload : function (f)

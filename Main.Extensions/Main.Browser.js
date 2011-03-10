@@ -143,7 +143,7 @@ Main.Browser = {
       }
     }
 
-    return false;
+    return null;
   },
 
   // This allows the user to query for the rendering engine.
@@ -170,6 +170,8 @@ Main.Browser = {
       if(this.RenderingEngineRegex[engine].test(this.UserAgentHeader))
         return engine.toLowerCase();
     }
+
+    return null;
   },
 
   // Used to grab version information about the rendering engine.
@@ -204,6 +206,6 @@ Main.Browser = {
       }
     }
 
-    return false;
+    return null;
   }
 }

@@ -105,7 +105,7 @@ Main.Loader.Script.QueueObject.prototype = {
         }, this.timeout);
     }
 
-    return true; // The Load function was successfully called..
+    return true; // The Load function was successfully called.
   },
 
   Processed : function (state)

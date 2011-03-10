@@ -1,7 +1,7 @@
 /*
  * File Name: Main.Constants.js
  * Date Written: February 28, 2011
- * Date Last Updated: March 8, 2011
+ * Date Last Updated: March 10, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Main.js
  */
@@ -228,7 +228,7 @@ Main.Constant = {
      * Arrays of constants.
      */
 
-    KEY_STATES : [], // An array storing all the key state constants.
+    STATES : [], // An array storing all the key state constants.
     KEYS : [], // An array storing all the key constants.
     TEXT_KEYS : [], // A set of keys which will be pressed to type
                     // text, or to modify text.
@@ -265,7 +265,7 @@ Main.Constant = {
      * Arrays of constants.
      */
 
-    MOUSE_STATES : [],
+    STATES : [],
     BUTTONS : [],
     CONSTANTS : []
   },
@@ -275,6 +275,16 @@ Main.Constant = {
     FOCUS_OUT : 114,
 
     CONSTANTS : []
+  },
+
+  // Used by the Canvas.Input class to determined whether an instance
+  // of the Canvas.Input.Action class is going to trigger or catch
+  // input.
+  ACTION_MODE : {
+    TRIGGER : 1, // TRIGGER means that it will only go off if the state
+                 // and all the actions are performed at the same time.
+    CATCH   : 2  // CATCH means that it will go off when the state and
+                 // any of the actions go off.
   },
 
   /*
@@ -307,8 +317,8 @@ Main.onfileload(function () {
 
   var K = Main.Constant.KEYBOARD;
 
-  K.KEY_STATES = [K.PRESS, K.HOLD, K.RELEASE];
-  K.KEYS = [           K.A,            K.B,             K.C,             K.D,            K.E,
+  K.STATES = [     K.PRESS,         K.HOLD,       K.RELEASE                                  ];
+  K.KEYS =   [         K.A,            K.B,             K.C,             K.D,            K.E,
                        K.F,            K.G,             K.H,             K.I,            K.J,
                        K.K,            K.L,             K.M,             K.N,            K.O,
                        K.P,            K.Q,             K.R,             K.S,            K.T,
@@ -327,7 +337,7 @@ Main.onfileload(function () {
              K.SCROLL_LOCK,     K.NUM_LOCK,        K.INSERT,          K.HOME,      K.PAGE_UP,
                K.PAGE_DOWN,          K.END,        K.DELETE,            K.UP,         K.DOWN,
                     K.LEFT,        K.RIGHT,  K.PRINT_SCREEN,         K.PAUSE,          K.ESC ];
-  K.CONSTANTS = K.KEY_STATES.concat(K.KEYS);
+  K.CONSTANTS = K.KEYS.concat(K.STATES);
 
   K.TEXT_KEYS = [      K.A,            K.B,             K.C,             K.D,            K.E,
                        K.F,            K.G,             K.H,             K.I,            K.J,
@@ -351,10 +361,10 @@ Main.onfileload(function () {
 
   var M = Main.Constant.MOUSE;
 
-  M.MOUSE_STATES = [ M.CLICK, M.DBLCLICK, M.SCROLL_UP, M.SCROLL_DOWN, M.MOVE, M.ENTER,
+  M.STATES =       [ M.CLICK, M.DBLCLICK, M.SCROLL_UP, M.SCROLL_DOWN, M.MOVE, M.ENTER,
                      M.LEAVE,     M.DOWN,        M.UP,        M.DRAG, M.DROP, M.HOVER ];
   M.BUTTONS =      [  M.LEFT,   M.MIDDLE,     M.RIGHT                                 ];
-  M.CONSTANTS = M.BUTTONS.concat(M.MOUSE_STATES);
+  M.CONSTANTS = M.BUTTONS.concat(M.STATES);
 
   /*
    * And, lastly, do the same for Main.Constant.WINDOW.
