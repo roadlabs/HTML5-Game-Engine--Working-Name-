@@ -1,6 +1,7 @@
 /*
  * File Name: Canvas.js
  * Date Written: March 9, 2011
+ * Date Last Updated: March 11, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Player.js
  * Implementations: Canvas.Draw.js,
@@ -34,6 +35,9 @@ Main.Classes.Player.Canvas = function (element)
     this.Input = new this.Input(this);
     // this.Draw = new this.Draw(this);
     // this.Camera = new this.Camera(this);
+
+    // Set the oncontextmenu value.
+    this.canvas.oncontextmenu = this.ContextMenu.bind(this);
   }
 
   else
@@ -54,6 +58,8 @@ Main.Classes.Player.Canvas.prototype = {
                   // drawing API.
   Map : null, // The Main.Classes.Map instance this will be using
               // to draw.
+
+  context_menu : false, // By default, there is no context menu.
 
   /*
    * Inner class definitions.
@@ -136,5 +142,32 @@ Main.Classes.Player.Canvas.prototype = {
       this.canvas.style.display = "inline";
     else if(display == false)
       this.canvas.style.display = "none";
+  },
+
+  /*
+   * Canvas class methods.
+   */
+
+  ContextMenu : function ()
+  {
+    return this.context_menu;
+  },
+
+  DisableContextMenu : function ()
+  // This disabled the browser's default context menu that occurs on right-clicking
+  // the canvas. If successfully disabled, it will return true, and otherwise it will
+  // return false.
+  {
+    this.context_menu = false;
+  },
+
+  EnableContextMenu : function ()
+  {
+    this.context_menu = true;
+  },
+
+  ToggleContextMenu : function ()
+  {
+    this.context_menu = !this.context_menu;
   }
 }

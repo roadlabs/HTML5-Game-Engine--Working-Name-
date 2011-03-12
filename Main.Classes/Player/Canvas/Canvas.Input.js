@@ -1,20 +1,23 @@
 /*
  * File Name: Canvas.Input.js
  * Date Written: March 9, 2011
- * Date Last Updated: March 10, 2011
+ * Date Last Updated: March 11, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Canvas.js
  * Implementations: Canvas.Input.Action.js,
- *   Canvas.Input.Event.js
+ *   Canvas.Input.Event.js, Canvas.Input.StateChanger.js
  */
 
-// Main.includes("Main.Classes/Player/Canvas/Canvas.Input.Action.js");
+Main.includes("Main.Classes/Player/Canvas/Canvas.Input.Action.js");
 // Main.includes("Main.Classes/Player/Canvas/Canvas.Input.Event.js");
+Main.includes("Main.Classes/Player/Canvas/Canvas.Input.StateChanger.js");
 
 Main.Classes.Player.Canvas.prototype.Input = function (Master)
 {
   this.Master = Master;
   this.Canvas = this.Master.canvas;
+
+  this.Canvas.onmousedown = this.UpdateInputState.bind(this);
 }
 
 Main.Classes.Player.Canvas.prototype.Input.prototype = {
@@ -43,6 +46,11 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
   // Note that a tag is only true during the iteration of the game loop that it was called. After
   // that it reverts to false.
   Tags : [],
+
+  // An array of inputs (from Main.Constant.KEYBOARD, Main.Constant.MOUSE, or Main.Constant.WINDOW).
+  // These are associated with an object reporting information about them. This is used to report
+  // for the Action objects.
+  Input : [],
 
   /*
    * Inner class definitions.
@@ -178,5 +186,11 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
       // If there are zero arguments, or more than two arguments, there's nothing
       // the function can do with input, so assume it's invalid and return false.
       return false;
-  }
+  },
+
+  // These are implemented in Canvas.Input.Statechanger.js. They're both functions, but long
+  // and tedious ones, so they're implemented in their own, separate file.
+
+  UpdateInputState : null,
+  NormalizeInput   : null
 }
