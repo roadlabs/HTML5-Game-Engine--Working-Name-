@@ -32,6 +32,10 @@ var Main = {
     return path.join("/") + "/";
   },
 
+  // These return the size, in pixels, of the window's height and width.
+  get PageWidth()  { return window.innerWidth  || document.documentElement.clientWidth  || document.getElementsByTagName("body")[0].clientWidth;  },
+  get PageHeight() { return window.innerHeight || document.documentElement.clientHeight || document.getElementsByTagNAme("body")[0].clientHeight; },
+
   // User-written.
   onready : null,
 
@@ -61,7 +65,8 @@ var Main = {
   Browser : null,
 
   // Used to determine the user's operating system and version. Most useful
-  // for distinguishing between mobile and desktop devices.
+  // for distinguishing between mobile and desktop devices. This is implemented
+  // in Main.OS.js
   OS : null,
 
   // This is used to implement four dynamic-content loaders, for Javascript

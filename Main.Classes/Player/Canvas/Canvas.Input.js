@@ -16,24 +16,6 @@ Main.Classes.Player.Canvas.prototype.Input = function (Master)
 {
   this.Master = Master;
   this.Canvas = this.Master.canvas;
-
-  var Binded_UIS = this.UpdateInputState.bind(this);
-
-  this.Canvas.onmousedown = Binded_UIS;
-  this.Canvas.onmouseup = Binded_UIS
-  this.Canvas.onclick = Binded_UIS;
-  this.Canvas.onmousemove = Binded_UIS;
-  this.Canvas.onmouseover = Binded_UIS;
-  this.Canvas.onmouseout = Binded_UIS;
-
-  window.onkeyup = Binded_UIS;
-  window.onblur = Binded_UIS;
-  window.onfocus = Binded_UIS;
-
-  if(Main.Browser.firefox)
-    this.Canvas.addEventListener("DOMMouseScroll", Binded_UIS, false);
-  else
-    this.Canvas.onmousewheel = Binded_UIS;
 }
 
 Main.Classes.Player.Canvas.prototype.Input.prototype = {
@@ -204,10 +186,28 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
       return false;
   },
 
-  // These are implemented in Canvas.Input.Statechanger.js. They're both functions, but long
-  // and tedious ones, so they're implemented in their own, separate file.
+  /*
+   * These functions indicate whether the value provided is a member of a given Main.Constant.*
+   * group.
+   */
+
+  IsKeyboardValue : function (k) { return Main.Constant.KEYBOARD.CONSTANTS.indexOf(k) != -1; },
+  IsMouseValue    : function (m) { return Main.Constant.MOUSE.CONSTANTS.indexOf(m) != -1;    },
+  IsWindowValue   : function (w) { return Main.Constant.WINDOW.CONSTANTS.indexOf(w) != -1;   },
+  IsTouchValue    : function (t) { return Main.Constant.TOUCH.CONSTANTS.indexOf(t) != -1;    },
+
+  /*
+   * These are implemented in Canvas.Input.Statechanger.js. They're both functions, but long
+   * and tedious ones, so they're implemented in their own, separate file.
+   */
 
   UpdateInputState : null,
   ThrowNewEvent    : null,
-  NormalizeInput   : null
+  NormalizeInput   : null,
+
+  // Two inner classes with methods for normalizations and corrections for state and input
+  // stuff.
+
+  Corrections : null,
+  Normalizations : null
 }

@@ -1,7 +1,7 @@
 /*
  * File Name: Canvas.js
  * Date Written: March 9, 2011
- * Date Last Updated: March 11, 2011
+ * Date Last Updated: March 13, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Player.js
  * Implementations: Canvas.Draw.js,
@@ -82,6 +82,12 @@ Main.Classes.Player.Canvas.prototype = {
    */
 
   get id() { return this.canvas.id; },
+
+  // These get the pixel positions relative to the page for the canvas element.
+  get LeftOffset()   { return this.canvas.offsetLeft;   },
+  get RightOffset()  { return Main.PageWidth - (this.LeftOffset + this.height);  },
+  get TopOffset()    { return this.canvas.offsetTop;    },
+  get BottomOffset() { return Main.PageHeight - (this.TopOffset + this.width); },
 
   // Pseudo-properties that allow the user to access the height and
   // width, in pixels, of the <canvas> element. They can also set

@@ -62,7 +62,7 @@ Main.Browser = {
   },
 
   // Accessor for the userAgent property of the navigator object.
-  get UserAgentHeader() { return "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en; rv:1.9.2.14pre) Gecko/20101212 Camino/2.1a1pre (like Firefox/3.6.14pre)"; }, // return navigator.userAgent; },
+  get UserAgentHeader() { return navigator.userAgent; },
 
   /*
    * Implements the pseudo-properties to determine the current browser.

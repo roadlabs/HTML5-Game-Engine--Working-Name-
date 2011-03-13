@@ -379,6 +379,6 @@ Main.onfileload(function () {
 
   var W = Main.Constant.WINDOW;
 
-  W.CONSTANTS = [W.FOCUS_IN, W.FOCUS_OUT];
+  W.CONSTANTS = [W.FOCUS_IN, W.FOCUS_OUT, W.HIDE, W.SHOW];
 
 });
