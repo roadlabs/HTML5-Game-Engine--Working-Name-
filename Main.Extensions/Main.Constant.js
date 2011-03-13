@@ -1,7 +1,7 @@
 /*
  * File Name: Main.Constants.js
  * Date Written: February 28, 2011
- * Date Last Updated: March 10, 2011
+ * Date Last Updated: March 13, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Main.js
  */
@@ -153,76 +153,77 @@ Main.Constant = {
     NINE  : 37,
     ZERO  : 38,
 
-    NUMPAD_ONE   : 39,
-    NUMPAD_TWO   : 40,
-    NUMPAD_THREE : 41,
-    NUMPAD_FOUR  : 42,
-    NUMPAD_FIVE  : 43,
-    NUMPAD_SIX   : 44,
-    NUMPAD_SEVEN : 45,
-    NUMPAD_EIGHT : 46,
-    NUMPAD_NINE  : 47,
-    NUMPAD_ZERO  : 48,
-    NUMPAD_SLASH : 49,
-    NUMPAD_POINT : 50,
+    NUMPAD_ONE      : 39,
+    NUMPAD_TWO      : 40,
+    NUMPAD_THREE    : 41,
+    NUMPAD_FOUR     : 42,
+    NUMPAD_FIVE     : 43,
+    NUMPAD_SIX      : 44,
+    NUMPAD_SEVEN    : 45,
+    NUMPAD_EIGHT    : 46,
+    NUMPAD_NINE     : 47,
+    NUMPAD_ZERO     : 48,
+    NUMPAD_SLASH    : 49,
+    NUMPAD_POINT    : 50,
+    NUMPAD_ASTERISK : 51,
 
-    TILDE         : 51,
-    HYPHEN        : 52,
-    EQUALS_SIGN   : 53,
-    LEFT_BRACKET  : 54,
-    RIGHT_BRACKET : 55,
-    BACKSLASH     : 56,
-    SEMICOLON     : 57,
-    APOSTROPHE    : 58,
-    COMMA         : 59,
-    PERIOD        : 60,
-    FORWARDSLASH  : 61,
+    TILDE         : 52,
+    HYPHEN        : 53,
+    EQUALS_SIGN   : 54,
+    LEFT_BRACKET  : 55,
+    RIGHT_BRACKET : 56,
+    BACKSLASH     : 57,
+    SEMICOLON     : 58,
+    APOSTROPHE    : 59,
+    COMMA         : 60,
+    PERIOD        : 61,
+    FORWARDSLASH  : 62,
 
-    F1  : 62,
-    F2  : 63,
-    F3  : 64,
-    F4  : 65,
-    F5  : 66,
-    F6  : 67,
-    F7  : 68,
-    F8  : 69,
-    F9  : 70,
-    F10 : 71,
-    F11 : 72,
-    F12 : 73,
+    F1  : 63,
+    F2  : 64,
+    F3  : 65,
+    F4  : 66,
+    F5  : 67,
+    F6  : 68,
+    F7  : 69,
+    F8  : 70,
+    F9  : 71,
+    F10 : 72,
+    F11 : 73,
+    F12 : 74,
 
-    SHIFT : 74,
-    CTRL  : 75,
-    ALT   : 76,
+    SHIFT : 75,
+    CTRL  : 76,
+    ALT   : 77,
 
-    WINDOWS : 77,
+    WINDOWS : 78,
 
-    SPACE : 78,
-    ENTER : 79,
-    TAB   : 80,
+    SPACE : 79,
+    ENTER : 80,
+    TAB   : 81,
 
-    BACKSPACE : 81,
+    BACKSPACE : 82,
 
-    CAPS_LOCK   : 82,
-    SCROLL_LOCK : 83,
-    NUM_LOCK    : 84,
+    CAPS_LOCK   : 83,
+    SCROLL_LOCK : 84,
+    NUM_LOCK    : 85,
 
-    INSERT    : 85,
-    HOME      : 86,
-    PAGE_UP   : 87,
-    PAGE_DOWN : 88,
-    END       : 89,
-    DELETE    : 90,
+    INSERT    : 86,
+    HOME      : 87,
+    PAGE_UP   : 88,
+    PAGE_DOWN : 89,
+    END       : 90,
+    DELETE    : 91,
 
-    UP    : 91,
-    DOWN  : 92,
-    LEFT  : 93,
-    RIGHT : 94,
+    UP    : 92,
+    DOWN  : 93,
+    LEFT  : 94,
+    RIGHT : 95,
 
-    PRINT_SCREEN : 95,
-    PAUSE        : 96,
+    PRINT_SCREEN : 96,
+    PAUSE        : 97,
 
-    ESC : 97,
+    ESC : 98,
 
     /*
      * Arrays of constants.
@@ -237,29 +238,29 @@ Main.Constant = {
 
   MOUSE : {
     // Button states.
-    CLICK    : 98,
-    DBLCLICK : 99,
+    CLICK    :  99,
+    DBLCLICK : 100,
 
-    SCROLL_UP   : 100, // Mouse wheel.
-    SCROLL_DOWN : 101,
+    SCROLL_UP   : 101, // Mouse wheel.
+    SCROLL_DOWN : 102,
 
-    MOVE  : 102,
-    ENTER : 103,
-    LEAVE : 104,
+    MOVE  : 103,
+    ENTER : 104,
+    LEAVE : 105,
 
-    DOWN : 105,
-    UP   : 106,
+    DOWN : 106,
+    UP   : 107,
 
-    DRAG : 107, // Simultaneous MOUSE.MOVE and MOUSE.DOWN
-    DROP : 108, // MOUSE.UP after MOUSE.DRAG
+    DRAG : 108, // Simultaneous MOUSE.MOVE and MOUSE.DOWN
+    DROP : 109, // MOUSE.UP after MOUSE.DRAG
 
-    HOVER : 109, // MOUSE.MOVE not occuring on the screen
+    HOVER : 110, // MOUSE.MOVE not occuring on the screen
                  // after n milliseconds.
 
     // Buttons.
-    LEFT   : 110,
-    MIDDLE : 111,  // Mouse wheel.
-    RIGHT  : 112,
+    LEFT   : 111,
+    MIDDLE : 112,  // Mouse wheel.
+    RIGHT  : 113,
 
     /*
      * Arrays of constants.
@@ -270,11 +271,17 @@ Main.Constant = {
     CONSTANTS : []
   },
 
-  WINDOW  : {
-    FOCUS_IN  : 113,
+  WINDOW : {
     FOCUS_OUT : 114,
+    FOCUS_IN  : 115,
 
     CONSTANTS : []
+  },
+
+  TOUCH : {
+    /**
+     ** TODO: Add TOUCH constants.
+     **/
   },
 
   // Used by the Canvas.Input class to determined whether an instance

@@ -1,7 +1,7 @@
 /*
  * File Name: Main.js
  * Date Written: February 28, 2011
- * Date Last Updated: March 8, 2011
+ * Date Last Updated: March 13, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Implementations: Main.Constant.js,
  *   Main.Default.js, Main.Browser.js,
@@ -20,6 +20,11 @@ var Main = {
     */
 
   // Read-only.
+  get time()
+  {
+    return (new Date()).getTime(); 
+  },
+
   get directory()
   {
     var path = window.location.href.split("/");
@@ -54,6 +59,10 @@ var Main = {
   // rendering engine, and version. This is implemented in the file
   // Main.Browser.js.
   Browser : null,
+
+  // Used to determine the user's operating system and version. Most useful
+  // for distinguishing between mobile and desktop devices.
+  OS : null,
 
   // This is used to implement four dynamic-content loaders, for Javascript
   // scripts, CSS stylesheets, images, and sound.

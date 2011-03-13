@@ -1,7 +1,7 @@
 /*
  * File Name: Canvas.Input.js
  * Date Written: March 9, 2011
- * Date Last Updated: March 11, 2011
+ * Date Last Updated: March 13, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Canvas.js
  * Implementations: Canvas.Input.Action.js,
@@ -17,7 +17,23 @@ Main.Classes.Player.Canvas.prototype.Input = function (Master)
   this.Master = Master;
   this.Canvas = this.Master.canvas;
 
-  this.Canvas.onmousedown = this.UpdateInputState.bind(this);
+  var Binded_UIS = this.UpdateInputState.bind(this);
+
+  this.Canvas.onmousedown = Binded_UIS;
+  this.Canvas.onmouseup = Binded_UIS
+  this.Canvas.onclick = Binded_UIS;
+  this.Canvas.onmousemove = Binded_UIS;
+  this.Canvas.onmouseover = Binded_UIS;
+  this.Canvas.onmouseout = Binded_UIS;
+
+  window.onkeyup = Binded_UIS;
+  window.onblur = Binded_UIS;
+  window.onfocus = Binded_UIS;
+
+  if(Main.Browser.firefox)
+    this.Canvas.addEventListener("DOMMouseScroll", Binded_UIS, false);
+  else
+    this.Canvas.onmousewheel = Binded_UIS;
 }
 
 Main.Classes.Player.Canvas.prototype.Input.prototype = {
@@ -192,5 +208,6 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
   // and tedious ones, so they're implemented in their own, separate file.
 
   UpdateInputState : null,
+  ThrowNewEvent    : null,
   NormalizeInput   : null
 }

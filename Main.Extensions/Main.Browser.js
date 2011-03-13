@@ -1,7 +1,7 @@
 /*
  * File Name: Main.Browser.js
  * Date Written: February 28, 2011
- * Date Last Updated: March 1, 2011
+ * Date Last Updated: March 13, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Main.js
  */
@@ -62,7 +62,7 @@ Main.Browser = {
   },
 
   // Accessor for the userAgent property of the navigator object.
-  get UserAgentHeader() { return navigator.userAgent; },
+  get UserAgentHeader() { return "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en; rv:1.9.2.14pre) Gecko/20101212 Camino/2.1a1pre (like Firefox/3.6.14pre)"; }, // return navigator.userAgent; },
 
   /*
    * Implements the pseudo-properties to determine the current browser.
@@ -72,8 +72,10 @@ Main.Browser = {
   BrowserRegex : {
     Camino           : /(camino)[\/]((\d)+\.\d+([ab]{1}\d+pre))/i,
     Chrome           : /(chrome)[\/](((\d)+(\.)?)+)/i,
+    Epiphany         : /(epiphany)[\/](((\d)+(\.)?){3,3})/i,
     Firefox          : /(firefox)[\/](((\d)+(\.)?)+(b)?(\d(pre)?)*)/i,
     InternetExplorer : /(msie)(\ +)(\d\.[\d]+[b]{0,1})/i,
+    Konqueror        : /(konqueror)[\/](\d\.\d)/i,
     Netscape         : /(navigator)[\/][\w.]+/i,
     Opera            : /(opera)[\/][\w.]+/i,
     Safari           : /(safari)[\/]([\d\.]+)/i,
@@ -83,14 +85,16 @@ Main.Browser = {
 
   get camino()           { return this.BrowserRegex.Camino.test(this.UserAgentHeader);           },
   get chrome()           { return this.BrowserRegex.Chrome.test(this.UserAgentHeader);           },
+  get epiphany()         { return this.BrowserRegex.Epiphany.test(this.UserAgentHeader);         },
   get firefox()          { return this.BrowserRegex.Firefox.test(this.UserAgentHeader);          },
   get internetexplorer() { return this.BrowserRegex.InternetExplorer.test(this.UserAgentHeader); },
+  get konqueror()        { return this.BrowserRegex.Konqueror.text(this.UserAgentHeader);        },
   get netscape()         { return this.BrowserRegex.Netscape.test(this.UserAgentHeader);         },
   get opera()            { return this.BrowserRegex.Opera.test(this.UserAgentHeader);            },
   get safari()
   {
-    // Requires a special case because of Google Chrome's output to navigator.userAgent.
-    return (!this.chrome && this.BrowserRegex.Safari.test(this.UserAgentHeader));
+    // Requires a special case because of Google Chrome's and Epiphany's output to navigator.userAgent.
+    return (!this.chrome && !this.epiphany && this.BrowserRegex.Safari.test(this.UserAgentHeader));
   },
 
   // Grabs the browser regex data.
@@ -110,8 +114,10 @@ Main.Browser = {
   BrowserVersionRegex : {
     Camino           : /(camino)[\/]((\d)+\.\d+([ab]{1}\d+pre))/i,
     Chrome           : /(chrome)[\/](((\d)+(\.)?)+)/i,
+    Epiphany         : /(epiphany)[\/](((\d)+(\.)?){3,3})/i,
     Firefox          : /(firefox)[\/](((\d)+(\.)?)+(b)?(\d(pre)?)*)/i,
     InternetExplorer : /(msie)(\ +)(\d\.[\d]+[b]{0,1})/i,
+    Konqueror        : /(konqueror)[\/](\d\.\d)/i,
     Netscape         : /(navigator)[\/]([\w.]+)/i,
     Opera            : /(version)[\/]([\w.]+)/i,
     Safari           : /(safari)[\/]([\d\.]+)/i,
@@ -119,8 +125,10 @@ Main.Browser = {
     Position         : {
                           Camino           : 2,
                           Chrome           : 2,
+                          Epiphany         : 2,
                           Firefox          : 2,
                           InternetExplorer : 3,
+                          Konqueror        : 2,
                           Netscape         : 2,
                           Opera            : 2,
                           Safari           : 2
@@ -150,6 +158,7 @@ Main.Browser = {
 
   RenderingEngineRegex : {
     Gecko   : /(gecko)[\/](\d+)/i,
+    KHTML   : /(khtml)[\/]((\d+(\.)?){3,3})/i,
     WebKit  : /(applewebkit)[\/](\d+\.\d)/i,
     Trident : /(trident)[\/](\d+\.\d)/i,
     Presto  : /(presto)[\/]((\d+\.)+)/i
@@ -158,6 +167,7 @@ Main.Browser = {
   // Rendering engine pseudo-properties.
 
   get gecko()   { return this.RenderingEngineRegex.Gecko.test(this.UserAgentHeader);   },
+  get khtml()   { return this.RenderingEngineRegex.KHTML.test(this.UserAgentHeader);   },
   get webkit()  { return this.RenderingEngineRegex.WebKit.test(this.UserAgentHeader);  },
   get trident() { return this.RenderingEngineRegex.Trident.test(this.UserAgentHeader); },
   get presto()  { return this.RenderingEngineRegex.Presto.test(this.UserAgentHeader);  },
@@ -178,12 +188,14 @@ Main.Browser = {
 
   RenderingEngineVersionRegex : {
     Gecko    : /(gecko)[\/](\d+)/i,
+    KHTML    : /(khtml)[\/]((\d+(\.)?){3,3})/i,
     WebKit   : /(applewebkit)[\/]([\d\.]+)/i,
     Trident  : /(trident)[\/](\d+\.\d)/i,
     Presto   : /(presto)[\/]((\d+\.?)+)/i,
 
     Position : {
                   Gecko   : 2,
+                  KHTML   : 2,
                   WebKit  : 2,
                   Trident : 2,
                   Presto  : 2
