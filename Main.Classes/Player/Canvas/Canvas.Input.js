@@ -69,13 +69,13 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
    * Class method definitions.
    */
 
-  Bind : function (state, action, func)
-  // This is used to bind input actions to a given function. The state and action arguments are both
-  // necessary if it is either a keyboard or mouse action. If it is a window action, then action can
+  Bind : function (state, input, func)
+  // This is used to bind input actions to a given function. The state and input arguments are both
+  // necessary if it is either a keyboard or mouse action. If it is a window action, then input can
   // be dropped. Thus, the two forms of arguments are as follows:
-  //   Bind(state, action, func)
+  //   Bind(state, input, func)
   //   Bind(state, func)
-  // Additionally, action may be an array, while state must be a single value.
+  // Additionally, input may be an array, while state must be a single value.
   {
     var A = null;
 
@@ -91,10 +91,10 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
     else if(Bind.arguments.length == 3)
     // Otherwise, this should either be a MOUSE or KEYBOARD CALL.
     {
-      if(!this.Integrity(state, action))
+      if(!this.Integrity(state, input))
         return null;
 
-      A = new this.Action(this, state, action, func);
+      A = new this.Action(this, state, input, func);
     }
     else
       return null;
@@ -102,31 +102,37 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
     return A;
   },
 
-  Trigger : function (state, actions, func)
+  Trigger : function (state, input, func)
+  // This sets an Action object to trigger mode, meaning the relevant
+  // function is only called if *all* the inputs specified by input are
+  // set to the specified state.
   {
-    var A = this.Bind(state, action, func)
+    var A = this.Bind(state, input, func)
     if(A)
       A.mode = Main.Constant.ACTION.TRIGGER;
 
     return A;
   },
 
-  Catch : function (state, actions, func)
+  Catch : function (state, input, func)
+  // This sets an Action object to catch mode, meaning the relevnat
+  // function is called if *any* of the inputs specified by input are
+  // set to the specified state.
   {
-    var A = this.Bind(state, action, func);
+    var A = this.Bind(state, input, func);
     if(A)
       A.mode = Main.Constant.ACTION.CATCH;
 
     return A;
   },
 
-  Integrity : function (state, action)
+  Integrity : function (state, input)
   {
     if(Integrity.arguments.length == 1)
       // If there is one argument, then it has to be passing window states. Check
-      // that action isn't true, just to be sure, and verify that the state is in
+      // that input isn't true, just to be sure, and verify that the state is in
       // WINDOW.CONSTANTS.
-      return !action && (Main.Constant.WINDOW.CONSTANTS.indexOf(state) != -1);
+      return !input && (Main.Constant.WINDOW.CONSTANTS.indexOf(state) != -1);
 
     else if(Integrity.arguments.length == 2)
     // If the length is 2, then it's either KEYBOARD or MOUSE checks.
@@ -135,8 +141,8 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
 
       // Check both MOUSE.STATES and KEYBOARD.STATES and determine which of the
       // two state is in. Then set the array equal to either MOUSE.BUTTONS or
-      // KEYBOARD.KEYS, and that array will be used to check either action (if
-      // it is a single value) or the values in action (if it's an array).
+      // KEYBOARD.KEYS, and that array will be used to check either input (if
+      // it is a single value) or the values in input (if it's an array).
       if(Main.Constant.MOUSE.STATES.indexOf(state) != -1)
         IntegrityArray = Main.Constant.MOUSE.BUTTONS;
       else if(Main.Constant.KEYBOARD.STATES.indexOf(state) != -1)
@@ -147,17 +153,17 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
         // of the data is faulty. Return false.
         return false;
 
-      if(action instanceof Array)
+      if(input instanceof Array)
       {
-        if(action.length == 0)
-          // If action is an array, it must have data in it, otherwise the integrity
+        if(input.length == 0)
+          // If input is an array, it must have data in it, otherwise the integrity
           // of the data is faulty.
           return false;
 
-        for(var d in action)
+        for(var d in input)
         {
-          if(IntegrityArray.indexOf(action[d]) == -1)
-            // If any data in action is not found in the IntegrityArray we're checking
+          if(IntegrityArray.indexOf(input[d]) == -1)
+            // If any data in input is not found in the IntegrityArray we're checking
             // against, then the data is faulty, so return false.
             return false;
         }
@@ -170,7 +176,7 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
       // If the data isn't an array, it must be some other type of value. Check whether
       // it's in the integrity array.
       {
-        if(IntegrityArray.indexOf(action) != -1)
+        if(IntegrityArray.indexOf(input) != -1)
           // It was found in the array, so it's good data.
           return true;
 
@@ -197,8 +203,9 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
   IsTouchValue    : function (t) { return Main.Constant.TOUCH.CONSTANTS.indexOf(t) != -1;    },
 
   /*
-   * These are implemented in Canvas.Input.Statechanger.js. They're both functions, but long
-   * and tedious ones, so they're implemented in their own, separate file.
+   * These are implemented in Canvas.Input.Statechanger.js. They're in their own functions as
+   * they're relatively specific and different from the rest of the Canvas.Input.js file, and
+   * because the implementations are long and tedious.
    */
 
   UpdateInputState : null,

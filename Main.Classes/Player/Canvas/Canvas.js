@@ -160,7 +160,7 @@ Main.Classes.Player.Canvas.prototype = {
   },
 
   DisableContextMenu : function ()
-  // This disabled the browser's default context menu that occurs on right-clicking
+  // This disables the browser's default context menu that occurs on right-clicking
   // the canvas. If successfully disabled, it will return true, and otherwise it will
   // return false.
   {

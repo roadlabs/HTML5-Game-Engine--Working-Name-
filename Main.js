@@ -5,7 +5,8 @@
  * Written By: Timothy "Popisfizzy" Reilly
  * Implementations: Main.Constant.js,
  *   Main.Default.js, Main.Browser.js,
- *   Main.Loader.Script.js, Main.Loader.Image.js
+ *   Main.Loader.Script.js, Main.Loader.Image.js,
+ *   Main.OS.js, Map.js, Player.js
  */
 
 // This is the primary class that will be used by the library. It is a

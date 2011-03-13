@@ -15,7 +15,7 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.UpdateInputState = function
   var state = null;
   var input = null;
 
-  // x and y positions, relatively to the top-left corner of the screen, for
+  // x and y positions, relativ to the top-left corner of the screen, for
   // mouse input.
   var x = null;
   var y = null;
