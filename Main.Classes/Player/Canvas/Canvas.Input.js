@@ -1,7 +1,7 @@
 /*
  * File Name: Canvas.Input.js
  * Date Written: March 9, 2011
- * Date Last Updated: March 13, 2011
+ * Date Last Updated: March 14, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Canvas.js
  * Implementations: Canvas.Input.Action.js,
@@ -30,10 +30,10 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
   // The event periods for certain key and mouse events. These are
   // measured in milliseconds.
 
-  key_hold : 250, // A key is considered held-down if it is pressed for more than 1/4 of a second.
-  mouse_dblclick : 250, // A double-click action occurs if two clicks occur within 1/4 of a second.
-  mouse_hover : 1000, // A mouse-hover event occurs if the mouse remains in the same place for
-                      // one second.
+  key_hold : 500, // A key is considered held-down if it is pressed for more than half a second.
+  mouse_dblclick : 600, // A double-click action occurs if two clicks occur within 3/5 of a second.
+  mouse_hover : 750, // A mouse-hover event occurs if the mouse remains in the same place for
+                     // 3/4 of a second.
 
   // This is an array of Actions, which are a objects that store the collection of mouse, key, or
   // window actions and the related function they will call.
@@ -49,6 +49,9 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
   // These are associated with an object reporting information about them. This is used to report
   // for the Action objects.
   Input : [],
+
+  // Used to store past states of mouse input. This is needed for the dblclick event.
+  MouseInputArchive : [],
 
   /*
    * Inner class definitions.
@@ -209,6 +212,7 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
    */
 
   UpdateInputState : null,
+  GetInputData     : null,
   ThrowNewEvent    : null,
   NormalizeInput   : null,
 

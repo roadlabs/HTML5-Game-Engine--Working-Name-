@@ -15,7 +15,7 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.UpdateInputState = function
   var state = null;
   var input = null;
 
-  // x and y positions, relativ to the top-left corner of the screen, for
+  // x and y positions, relative to the top-left corner of the screen, for
   // mouse input.
   var x = null;
   var y = null;
@@ -88,7 +88,21 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.UpdateInputState = function
   // Normalize the input to the Main constants.
   var input = this.NormalizeInput(event, state);
 
-  // Calculate the x and y values.
+  // This changes the input for the state is MOUSE.MOVE and one
+  // of either MOUSE.MIDDLE or MOUSE.RIGHT recently had a MOUSE.DOWN
+  // state and no corresponding MOUSE.UP state.
+  if(state == Main.Constant.MOUSE.MOVE)
+  {
+    var middle_state = this.GetInputData(Main.Constant.MOUSE.MIDDLE).state;
+    var right_state = this.GetInputData(Main.Constant.MOUSE.RIGHT).state;
+
+    if((middle_state == Main.Constant.MOUSE.DOWN) || (middle_state == Main.Constant.MOUSE.MOVE) || (middle_state == Main.Constant.MOUSE.DRAG))
+      input = Main.Constant.MOUSE.MIDDLE;
+    if((right_state == Main.Constant.MOUSE.DOWN)  || (right_state == Main.Constant.MOUSE.MOVE)  || (right_state == Main.Constant.MOUSE.DRAG))
+      input = Main.Constant.MOUSE.RIGHT;
+  }
+
+  // Calculate the x and y values if it is a mouse event.
 
   if(this.IsMouseValue(state) && this.IsMouseValue(input))
   {
@@ -110,9 +124,9 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.UpdateInputState = function
     y = pageY - this.Master.TopOffset;
 
     // These make sure x is between 0 and the width or height of the
-    // canvas element.
-    x = Math.min(Math.max(0, x), this.Master.width);
-    y = Math.min(Math.max(0, y), this.Master.height);
+    // canvas element, minus one (as it starts from 0, not 1).
+    x = Math.min(Math.max(0, x), this.Master.width - 1);
+    y = Math.min(Math.max(0, y), this.Master.height - 1);
   }
 
   // Now add a new event.
@@ -147,6 +161,87 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.UpdateInputState = function
    * Now that corrections have been applied, attempt to implement the custom
    * events defined in the Main.Constant class.
    */
+
+  // This implements the custom dblclick event.
+
+  for(var e in Events)
+  {
+    if(Events[e][0] == Main.Constant.MOUSE.CLICK)
+    // If any of the events found are a click event, then we have to check
+    // if it should actually be a double-click event.
+    {
+      var break_loop = false;
+      var to_delete = []; // A list of archived events that should be deleted.
+      for(var o in this.MouseInputArchive)
+      {
+        var object = this.MouseInputArchive[o];
+        if((Main.time - object.time) > this.mouse_dblclick)
+          to_delete.push(o);
+        else if((object.state == Main.Constant.MOUSE.CLICK) && (Events[e][1] == object.input) &&
+               ((Main.time - object.time) <= this.mouse_dblclick) && (Events[e][2] == object.x) && (Events[e][3] == object.y))
+        {
+          Events[e] = [Main.Constant.MOUSE.DBLCLICK, Events[e][1], Events[e][2], Events[e][3]];
+          break_loop = true;
+        }
+      }
+
+      for(var d in to_delete)
+        delete this.MouseInputArchive[d];
+      delete to_delete;
+
+      if(break_loop)
+        break;
+    }
+  }
+
+  // This implements the custom drag event.
+
+  if((state == Main.Constant.MOUSE.MOVE) && (this.GetInputData(input).state == Main.Constant.MOUSE.DOWN))
+    // If the previous state of the current input is mousedown and it's
+    // mousemove, then it's a drag event.
+    Events.push([Main.Constant.MOUSE.DRAG, input, x, y]);
+  else if((state == Main.Constant.MOUSE.MOVE) && (this.GetInputData(input).state == Main.Constant.MOUSE.DRAG))
+    // If the previous state of othe current input is mousedrag, and it's
+    // current mousemove, then continue the drag event.
+    Events.push([Main.Constant.MOUSE.DRAG, input, x, y]);
+
+  // This implements the custom drop event.
+
+  if((state == Main.Constant.MOUSE.UP) && (this.GetInputData(input).state == Main.Constant.MOUSE.DRAG))
+    // The drop event occurs when a mouseup events occurs when the
+    // mousedrag event was the previous state.
+    Events.push([Main.Constant.MOUSE.DROP, input, x, y]);
+
+  // This implements the custom hover event.
+
+  if(state == Main.Constant.MOUSE.MOVE)
+  {
+    var _this = this;
+    setTimeout( function ()
+      {
+        var Data = _this.GetInputData(input);
+        if((Data.state == Main.Constant.MOUSE.MOVE) && (Data.x == x) && (Data.y == y))
+          _this.ThrowNewEvent(Main.Constant.MOUSE.HOVER, input, x, y);
+      }, this.mouse_hover);
+  }
+
+  // This implements the custom keypress event.
+
+  if((state == Main.Constant.KEYBOARD.PRESS) && (this.GetInputData(input).state in [Main.Constant.KEYBOARD.PRESS, Main.Constant.KEYBOARD.HOLD]))
+  {
+    // This prevents keypress from being called multiple times.
+    delete Events[0];
+
+    if((state == Main.Constant.KEYBOARD.PRESS) && ((Main.time - this.GetInputData(input).time) >= this.key_hold))
+      // If the key has been held long enough to be considered
+      // a hold, throw a hold event.
+      Events.push([Main.Constant.KEYBOARD.HOLD, input]);
+    if((state == Main.Constant.KEYBOARD.PRESS) && (this.GetInputData(input).state == Main.Constant.KEYBOARD.HOLD))
+      // If the current state is a keyboard press, and the
+      // previous state is a keyboard hold, then this is
+      // also actually a hold, not a press.
+      Events.push([Main.Constant.KEYBOARD.HOLD, input]);
+  }
 
   /*
    * Now, throw all the new events.
@@ -198,8 +293,33 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.Corrections = {
 
       return null;
     }
+  },
+
+}
+
+Main.Classes.Player.Canvas.prototype.Input.prototype.GetInputData = function (input)
+// This returns the class stored in the Input array. If it does not yet exist, then
+// one is created with some temporary data.
+{
+  if((typeof this.Input[input]) != "object")
+  {
+  
+
+    var InputObject = {
+      time  : Main.time,
+      state : null
+    }
+
+    if(this.IsMouseValue(input))
+    {
+      InputObject.x = null;
+      InputObject.y = null;
+    }
+
+    this.Input[input] = InputObject;
   }
 
+  return this.Input[input];
 }
 
 Main.Classes.Player.Canvas.prototype.Input.prototype.ThrowNewEvent = function (state, input, x, y)
@@ -213,6 +333,22 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.ThrowNewEvent = function (s
   {
     InputObject.x = x;
     InputObject.y = y;
+  }
+
+  if(!this.Input)
+    this.Input = [];
+  this.Input[input] = InputObject;
+
+  if(this.IsMouseValue(state))
+  {
+    this.MouseInputArchive.push({
+      time  : Main.time,
+      state : state,
+      input : input,
+
+      x : x,
+      y : y
+    });
   }
 }
 
@@ -230,6 +366,8 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.NormalizeInput = function (
     NormalizationClass = this.Normalizations.Keyboard;
   else if(this.IsWindowValue(state))
     NormalizationClass = this.Normalizations.Window;
+  else if(this.IsTouchValue(state))
+    NormalizationClass = this.Normalizations.Touch;
 
   for(var f in NormalizationClass)
   {
@@ -238,8 +376,8 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.NormalizeInput = function (
     {
       var output = func.call(null, event, state);
       if(output === false)
-      // If the output is exactly equal to false, then the loop will
-      // continue.
+        // If the output is exactly equal to false, then the loop will
+        // continue.
         continue;
 
       return output;
@@ -314,7 +452,7 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.Normalizations = {
         if(keyboard == 96)
           return Main.Constant.KEYBOARD.NUMPAD_ZERO;
         else
-          returnkeyboard - 58;
+          return keyboard - 58;
       }
       else if((112 <= keyboard) && (keyboard <= 123))
       // The F1 to F12 keys.
@@ -437,4 +575,12 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.Normalizations = {
       return 0;
     }
   },
+
+  Touch : {
+    Default : function ()
+    {
+      // Placeholder until I find out more about touch events.
+      return false;
+    }
+  }
 }
