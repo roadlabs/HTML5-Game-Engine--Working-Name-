@@ -16,6 +16,12 @@ Main.Classes.Player.Canvas.prototype.Input = function (Master)
 {
   this.Master = Master;
   this.Canvas = this.Master.canvas;
+
+  // The bind function creates a new instance of the function it binds each time
+  // it is called. That is, there is no caching. To prevent that, just bind this
+  // function automatically, and then assign the bound function to where it was
+  // stored previously.
+  this.UpdateInputState = this.UpdateInputState.bind(this);
 }
 
 Main.Classes.Player.Canvas.prototype.Input.prototype = {
@@ -212,9 +218,6 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
    */
 
   UpdateInputState       : null,
-  Bound_UpdateInputState : null, // just this.UpdateInputState.bind(this). The bind function
-                                 // doesn't cache, storing this will prevent multiple of what
-                                 // is effectively the same function from existing.
   GetInputData           : null,
   ThrowNewEvent          : null,
   NormalizeInput         : null,
