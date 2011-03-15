@@ -510,7 +510,6 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.Normalizations = {
           // Windows key.
           case 91:
             return Main.Constant.KEYBOARD.WINDOWS;
-            break;
 
           // Whitespace keys.
           case  8:
@@ -533,10 +532,8 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.Normalizations = {
           // Page keys.
           case 33:
             return Main.Constant.KEYBOARD.PAGE_UP;
-            break;
           case 34:
             return Main.Constant.KEYBOARD.PAGE_DOWN;
-            break;
           case 35:
             return Main.Constant.KEYBOARD.END;
           case 36:
