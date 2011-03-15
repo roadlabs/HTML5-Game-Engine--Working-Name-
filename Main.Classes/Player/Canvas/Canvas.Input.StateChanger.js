@@ -1,7 +1,7 @@
 /*
  * File Name: Canvas.Input.StateChanger.js
  * Date Written: March 11, 2011
- * Date Last Updated: March 13, 2011
+ * Date Last Updated: March 15, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Canvas.Input.js
  */
@@ -350,6 +350,10 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.ThrowNewEvent = function (s
       y : y
     });
   }
+
+  // var Event = new this.Event(input, InputObject.state, InputObject.time, InputObject.x, InputObject.y);
+  for(var a in this.Actions)
+    this.Actions[a].Evaluate(Event)
 }
 
 Main.Classes.Player.Canvas.prototype.Input.prototype.NormalizeInput = function (event, state)

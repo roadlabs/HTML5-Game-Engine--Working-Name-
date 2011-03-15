@@ -1,7 +1,7 @@
 /*
  * File Name: Canvas.Input.js
  * Date Written: March 9, 2011
- * Date Last Updated: March 14, 2011
+ * Date Last Updated: March 15, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Canvas.js
  * Implementations: Canvas.Input.Action.js,
@@ -9,7 +9,7 @@
  */
 
 Main.includes("Main.Classes/Player/Canvas/Canvas.Input.Action.js");
-// Main.includes("Main.Classes/Player/Canvas/Canvas.Input.Event.js");
+Main.includes("Main.Classes/Player/Canvas/Canvas.Input.Event.js");
 Main.includes("Main.Classes/Player/Canvas/Canvas.Input.StateChanger.js");
 
 Main.Classes.Player.Canvas.prototype.Input = function (Master)
@@ -211,10 +211,13 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
    * because the implementations are long and tedious.
    */
 
-  UpdateInputState : null,
-  GetInputData     : null,
-  ThrowNewEvent    : null,
-  NormalizeInput   : null,
+  UpdateInputState       : null,
+  Bound_UpdateInputState : null, // just this.UpdateInputState.bind(this). The bind function
+                                 // doesn't cache, storing this will prevent multiple of what
+                                 // is effectively the same function from existing.
+  GetInputData           : null,
+  ThrowNewEvent          : null,
+  NormalizeInput         : null,
 
   // Two inner classes with methods for normalizations and corrections for state and input
   // stuff.
