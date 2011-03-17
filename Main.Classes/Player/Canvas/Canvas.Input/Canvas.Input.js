@@ -1,16 +1,16 @@
 /*
  * File Name: Canvas.Input.js
  * Date Written: March 9, 2011
- * Date Last Updated: March 15, 2011
+ * Date Last Updated: March 16, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Canvas.js
  * Implementations: Canvas.Input.Action.js,
  *   Canvas.Input.Event.js, Canvas.Input.StateChanger.js
  */
 
-Main.includes("Main.Classes/Player/Canvas/Canvas.Input.Action.js");
-Main.includes("Main.Classes/Player/Canvas/Canvas.Input.Event.js");
-Main.includes("Main.Classes/Player/Canvas/Canvas.Input.StateChanger.js");
+Main.includes("Main.Classes/Player/Canvas/Canvas.Input/Canvas.Input.Action.js");
+Main.includes("Main.Classes/Player/Canvas/Canvas.Input/Canvas.Input.Event.js");
+Main.includes("Main.Classes/Player/Canvas/Canvas.Input/Canvas.Input.StateChanger.js");
 
 Main.Classes.Player.Canvas.prototype.Input = function (Master)
 {
@@ -22,6 +22,19 @@ Main.Classes.Player.Canvas.prototype.Input = function (Master)
   // function automatically, and then assign the bound function to where it was
   // stored previously.
   this.UpdateInputState = this.UpdateInputState.bind(this);
+
+  if(Main.Browser.opera)
+  {
+    if(!this.BrowserFixes)
+      this.BrowserFixes = new Object;
+
+    // Opera has an utterly-broken key event set up. This is part of a way to hack
+    // around that while attempting to maintain some sort of similarity in events,
+    // cross brwoser. This variable will only exist if the browser is Opera. Note
+    // that this only helps so much. For example, Opera is still not able to detect
+    // a difference between the numpad and numrow buttons.
+    this.BrowserFixes.Opera_KeyPressState = null;
+  }
 }
 
 Main.Classes.Player.Canvas.prototype.Input.prototype = {
@@ -88,16 +101,16 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
   {
     var A = null;
 
-    if(Bind.arguments.length == 2)
+    if(arguments.length == 2)
     // If there are two arguments, then this should be a WINDOW call.
     {
-      func = Bind.arguments[1];
+      func = arguments[1];
       if(!this.Integrity(state))
         return null;
 
       A = new this.Action(this, state, func);
     }
-    else if(Bind.arguments.length == 3)
+    else if(arguments.length == 3)
     // Otherwise, this should either be a MOUSE or KEYBOARD CALL.
     {
       if(!this.Integrity(state, input))
@@ -118,7 +131,7 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
   {
     var A = this.Bind(state, input, func)
     if(A)
-      A.mode = Main.Constant.ACTION.TRIGGER;
+      A.mode = Main.Constant.ACTION_MODE.TRIGGER;
 
     return A;
   },
@@ -130,20 +143,20 @@ Main.Classes.Player.Canvas.prototype.Input.prototype = {
   {
     var A = this.Bind(state, input, func);
     if(A)
-      A.mode = Main.Constant.ACTION.CATCH;
+      A.mode = Main.Constant.ACTION_MODE.CATCH;
 
     return A;
   },
 
   Integrity : function (state, input)
   {
-    if(Integrity.arguments.length == 1)
+    if(arguments.length == 1)
       // If there is one argument, then it has to be passing window states. Check
       // that input isn't true, just to be sure, and verify that the state is in
       // WINDOW.CONSTANTS.
       return !input && (Main.Constant.WINDOW.CONSTANTS.indexOf(state) != -1);
 
-    else if(Integrity.arguments.length == 2)
+    else if(arguments.length == 2)
     // If the length is 2, then it's either KEYBOARD or MOUSE checks.
     {
       var IntegrityArray = null;

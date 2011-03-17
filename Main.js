@@ -1,7 +1,7 @@
 /*
  * File Name: Main.js
  * Date Written: February 28, 2011
- * Date Last Updated: March 13, 2011
+ * Date Last Updated: March 16, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Implementations: Main.Constant.js,
  *   Main.Default.js, Main.Browser.js,
@@ -20,11 +20,20 @@ var Main = {
     * for the Main class. Only Main.Preloader and Main.$ are defined here.
     */
 
+  initialization_time : null, // The time at which Main was initialized.
+  game_start_time     : null, // The time the game loop was started.
+
   // Read-only.
-  get time()
-  {
-    return (new Date()).getTime(); 
-  },
+
+  // Time accessors. Made as accessors simply to make them read-only.
+  get time()         { return (new Date()).getTime();             },
+  get init_time()    { return this.initialization_time.getTime(); },
+  get start_time()   { return this.game_start_time.getTime();     },
+  get elapsed_time() { return this.time - this.init_time;         },
+  get real_time()    { return this.time - this.start_time         }, // The number of milliseconds since the game began.
+  get game_time()    { /* ... */                                  }, // The game time, which is going to be greater than
+                                                                     // or equal to real_time. This value depends on the
+                                                                     // latency of the game.
 
   get directory()
   {
@@ -43,6 +52,7 @@ var Main = {
   // The Init function, used for initialization. By default, called by window.onload.
   Init : function ()
   {
+    this.initialization_time = new Date();
     this.Preloader.LoadFirstFiles();
   },
 

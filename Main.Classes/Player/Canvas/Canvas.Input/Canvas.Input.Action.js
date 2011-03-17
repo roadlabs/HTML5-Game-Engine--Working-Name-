@@ -1,7 +1,7 @@
 /*
  * File Name: Canvas.Input.Action.js
  * Date Written: March 11, 2011
- * Date Last Modified: March 15, 2011
+ * Date Last Modified: March 16, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Canvas.Input.js
  */
@@ -39,9 +39,36 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.Action.prototype = {
 
   BindEvents : function ()
   // This binds the relevant events (based on the state variable) so that
-  // the actions can be performed when those events occur.
+  // the actions can be performed when those events occur. Certain events
+  // have to be binded at the same time, event if they are not part of the
+  // state of this action. That's because certain events require a counterpart
+  // to indicate a state change, such as a key being pressed and then released.
   {
-  
+    switch(this.state)
+    {
+      case Main.Constant.KEYBOARD.PRESS:
+      case Main.Constant.KEYBOARD.RELEASE:
+      case Main.Constant.KEYBOARD.HOLD:
+      {
+        // Many browsers vary their way of dealing with onkeyup, onkeydown, and
+        // onkeypress, so we have to do do this on a somewhat case-by-case basis.
+
+        if(Main.Browser.opera)
+        {
+          window.onkeydown = function (event) { event.preventDefault(); Report.innerHTML = event.keyCode; }; //this.Master.UpdateInputState;
+          // window.onkeypress = this.Master.UpdateInputState;
+          window.onkeyup = this.Master.UpdateInputState;
+        }
+
+        else
+        {
+          window.onkeydown = this.Master.UpdateInputState;
+          window.onkeyup = this.Master.UpdateInputState;
+        }
+
+        break;
+      }
+    }
   },
 
   IsInputComponent : function (i)
@@ -71,9 +98,9 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.Action.prototype = {
       // In TRIGGER mode, the action will occur if and only if all the inputs
       // are in the state for the action. Otherwise, it will not occur.
       {
-        for(var i in input)
+        for(var i in this.input)
         {
-          if(this.GetInputData(input).state != this.state)
+          if(this.Master.GetInputData(this.input[i]).state != this.state)
             return false;
         }
 
@@ -87,9 +114,9 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.Action.prototype = {
 
       if(this.mode == Main.Constant.ACTION_MODE.CATCH)
       {
-        for(var i in input)
+        for(var i in this.input)
         {
-          if(this.GetInputData(input).state == this.state)
+          if(this.Master.GetInputData(this.input[i]).state == this.state)
           {
             // If this evaluates as true at all, meaning any input is in
             // the proper state, then active the state. If it's a function,

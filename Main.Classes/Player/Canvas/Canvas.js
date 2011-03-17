@@ -10,7 +10,7 @@
 
 // Main.includes("Main.Classes/Player/Canvas/Canvas.Draw.js");
 // Main.includes("Main.Classes/Player/Canvas/Canvas.Camera.js");
-Main.includes("Main.Classes/Player/Canvas/Canvas.Input.js");
+Main.includes("Main.Classes/Player/Canvas/Canvas.Input/Canvas.Input.js");
 
 Main.Classes.Player.Canvas = function (element)
 {

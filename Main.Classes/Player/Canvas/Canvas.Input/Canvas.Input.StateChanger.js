@@ -1,7 +1,7 @@
 /*
  * File Name: Canvas.Input.StateChanger.js
  * Date Written: March 11, 2011
- * Date Last Updated: March 15, 2011
+ * Date Last Updated: March 16, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Canvas.Input.js
  */
@@ -22,7 +22,7 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.UpdateInputState = function
 
   // Stores all the new events that will be created. Each element takes the
   // form:
-  //   Event[n] = [state, input];
+  //   Event[n] = [state, input, (x, y)];
   var Events = [];
 
   var bindings = { // Build in states. We have to normalize these to
@@ -30,7 +30,7 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.UpdateInputState = function
 
     // Keyboard actions.
     keydown     : Main.Constant.KEYBOARD.PRESS,
-    keypress    : Main.Constant.KEYBOARD.HOLD,
+    keypress    : Main.Constant.KEYBOARD.PRESS,
     keyup       : Main.Constant.KEYBOARD.RELEASE,
 
     // Mouse actions.
@@ -80,6 +80,48 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.UpdateInputState = function
 
   if(event.cancelable && event.preventDefault)
     event.preventDefault();
+
+  /*
+   * Certain browsers, such as fucking Opera, have major
+   * issues in the implementation of certain events and
+   * other features as compared to other browsers. If
+   * this is the case, then the Canvas.Input.BrowserFixes
+   * class will exist.
+   */
+
+  if(this.BrowserFixes)
+  {
+    if((typeof this.BrowserFixes.Opera_KeyPressState) != "undefined")
+    // Opera has a broken system for key inputs for events, at least 'broken'
+    // when compared to other browsers. Opera is very much not optimal in
+    // several regards. The keypress event is especially broken, and this
+    // workaround allows us to, in effect, use a keydown event every time a
+    // keypress event occurs, by storing the previous keydown DOM event. This
+    // is not the best, or most preferable, solution, but it's the one that will
+    // have to do because of Opera's shortcomings.
+    {
+      if(event.type == "keydown")
+      {
+        this.BrowserFixes.Opera_KeyPressState = event;
+        return;
+      }
+
+      else if(this.BrowserFixes.Opera_KeyPressState)
+      {
+        if(event.type == "keypress")
+          event = this.BrowserFixes.Opera_KeyPressState;
+        else if(event.type == "keyup")
+          this.BrowserFixes.Opera_KeyPressState = null;
+      }
+    }
+  }
+
+  /*
+   * Determine all data for the event, in a normalized fashion
+   * for use in this engine. This calculates the state, input,
+   * x and y values (if necessary), and also alters input to
+   * correct for certain mouse states.
+   */
 
   var state = bindings[event.type];
   if((typeof state) == "function")
@@ -176,10 +218,16 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.UpdateInputState = function
       {
         var object = this.MouseInputArchive[o];
         if((Main.time - object.time) > this.mouse_dblclick)
+          // Objects that have existed longer than the dblclick period need not
+          // be archived any longer, as they arej effectively useless.
           to_delete.push(o);
         else if((object.state == Main.Constant.MOUSE.CLICK) && (Events[e][1] == object.input) &&
                ((Main.time - object.time) <= this.mouse_dblclick) && (Events[e][2] == object.x) && (Events[e][3] == object.y))
         {
+          // *If* the previous state was a click and *if* it is the same input and *if* it is within the
+          // dblclick periods and *if* it is at the same x,y pixel coordinate, then it is in fact a
+          // MOUSE.DBLCLICK event, not a MOUSE.CLICK event. Since this is true, the loop doesn't have to
+          // continue any longer, so end it.
           Events[e] = [Main.Constant.MOUSE.DBLCLICK, Events[e][1], Events[e][2], Events[e][3]];
           break_loop = true;
         }
@@ -225,7 +273,7 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.UpdateInputState = function
       }, this.mouse_hover);
   }
 
-  // This implements the custom keypress event.
+  // This implements the custom key hold event.
 
   if((state == Main.Constant.KEYBOARD.PRESS) && (this.GetInputData(input).state in [Main.Constant.KEYBOARD.PRESS, Main.Constant.KEYBOARD.HOLD]))
   {
@@ -236,7 +284,7 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.UpdateInputState = function
       // If the key has been held long enough to be considered
       // a hold, throw a hold event.
       Events.push([Main.Constant.KEYBOARD.HOLD, input]);
-    if((state == Main.Constant.KEYBOARD.PRESS) && (this.GetInputData(input).state == Main.Constant.KEYBOARD.HOLD))
+    else if((state == Main.Constant.KEYBOARD.PRESS) && (this.GetInputData(input).state == Main.Constant.KEYBOARD.HOLD))
       // If the current state is a keyboard press, and the
       // previous state is a keyboard hold, then this is
       // also actually a hold, not a press.
@@ -351,9 +399,9 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.ThrowNewEvent = function (s
     });
   }
 
-  // var Event = new this.Event(input, InputObject.state, InputObject.time, InputObject.x, InputObject.y);
+  var Event = new this.Event(input, InputObject.state, InputObject.time, InputObject.x, InputObject.y);
   for(var a in this.Actions)
-    this.Actions[a].Evaluate(Event)
+    this.Actions[a].Evaluate(Event);
 }
 
 Main.Classes.Player.Canvas.prototype.Input.prototype.NormalizeInput = function (event, state)
@@ -427,142 +475,268 @@ Main.Classes.Player.Canvas.prototype.Input.prototype.Normalizations = {
   },
 
   Keyboard : {
-    // Keyboard normalizations. Likely, only default will be necessary unless additional
-    // keys are added.
+    // Keyboard normalizations. Likely, only the defaults provided here
+    // will be necessary unless additional keys are added or browsers
+    // are added.
 
     Default : function (event, state)
     {
-      var keyboard = event.which;
-
-      if((65 <= keyboard) && (keyboard <= 90))
-        // The characters A through Z. They are all reported as
-        // uppercase characters, so this simplifies thing.
-        return keyboard - 62;
-
-      else if((48 <= keyboard) && (keyboard <= 57))
-      // The numeric characters at the top of the keyboard. These
-      // are reported distinctly from the numpad characters.
+      if(!Main.Browser.opera)
+      // Most browsers seem to follow this system, though Opera does not. This
+      // has to be altered specifically for Opera, and this is defined below.
       {
-        if(keyboard == 48)
-          return Main.Constant.KEYBOARD.ZERO;
-        else
-          // One through nine.
-          return keyboard - 20;
-      }
-      else if((96 <= keyboard) && (keyboard <= 105))
-      // Numpad zero through numpad 9. These are only reported
-      // if Number Lock is on.
-      {
-        if(keyboard == 96)
-          return Main.Constant.KEYBOARD.NUMPAD_ZERO;
-        else
-          return keyboard - 58;
-      }
-      else if((112 <= keyboard) && (keyboard <= 123))
-      // The F1 to F12 keys.
-        return keyboard - 49;
+        var keyboard = event.keyCode;
 
-      else
-      // Any other keys. They are less regular, so... SWITCH STATEMENTS!
-      {
-        switch(keyboard)
+        if((65 <= keyboard) && (keyboard <= 90))
+          // The characters A through Z. Browsers vary betwee
+          return keyboard - 62;
+
+        else if((48 <= keyboard) && (keyboard <= 57))
+        // The numeric characters at the top of the keyboard. These
+        // are reported distinctly from the numpad characters.
         {
-          // Other numpad buttons.
-          case 106:
-            return Main.Constant.KEYBOARD.NUMPAD_ASTERISK;
-          case 110:
-            return Main.Constant.KEYBOARD.NUMPAD_POINT;
-          case 111:
-            return Main.Constant.KEYBOARD.NUMPAD_SLASH;
-
-          // Symbol and punctuation keys.
-          case  59:
-            return Main.Constant.KEYBOARD.SEMICOLON;
-          case 107:
-            return Main.Constant.KEYBOARD.EQUALS_SIGN;
-          case 109:
-            return Main.Constant.KEYBOARD.HYPHEN;
-          case 188:
-            return Main.Constant.KEYBOARD.COMMA;
-          case 190:
-            return Main.Constant.KEYBOARD.PERIOD;
-          case 191:
-            return Main.Constant.KEYBOARD.FORWARDSLASH;
-          case 192:
-            return Main.Constant.KEYBOARD.TILDE;
-          case 219:
-            return Main.Constant.KEYBOARD.LEFT_BRACKET;
-          case 220:
-            return Main.Constant.KEYBOARD.BACKSLASH;
-          case 221:
-            return Main.Constant.KEYBOARD.RIGHT_BRACKET;
-          case 222:
-            return Main.Constant.KEYBOARD.APOSTROPHE;
-
-          // Modifier keys.
-          case 16:
-            return Main.Constant.KEYBOARD.SHIFT;
-          case 17:
-            return Main.Constant.KEYBOARD.CTRL;
-          case 18:
-            return Main.Constant.KEYBOARD.ALT;
-
-          // Windows key.
-          case 91:
-            return Main.Constant.KEYBOARD.WINDOWS;
-
-          // Whitespace keys.
-          case  8:
-            return Main.Constant.KEYBOARD.BACKSPACE;
-          case  9:
-            return Main.Constant.KEYBOARD.TAB;
-          case 13:
-            return Main.Constant.KEYBOARD.ENTER;
-          case 32:
-            return Main.Constant.KEYBOARD.SPACE;
-
-           // Keyboard lock keys.
-          case 20:
-            return Main.Constant.KEYBOARD.CAPS_LOCK;
-          case 145:
-            return Main.Constant.KEYBOARD.SCROLL_LOCK;
-          case 144:
-            return Main.Constant.KEYBOARD.NUM_LOCK;
-
-          // Page keys.
-          case 33:
-            return Main.Constant.KEYBOARD.PAGE_UP;
-          case 34:
-            return Main.Constant.KEYBOARD.PAGE_DOWN;
-          case 35:
-            return Main.Constant.KEYBOARD.END;
-          case 36:
-            return Main.Constant.KEYBOARD.HOME;
-          case 45:
-            return Main.Constant.KEYBOARD.INSERT;
-          case 46:
-            return Main.Constant.KEYBOARD.DELETE;
-
-          // Arrow keys.
-          case 37:
-            return Main.Constant.KEYBOARD.LEFT;
-          case 38:
-            return Main.Constant.KEYBOARD.UP;
-          case 39:
-            return Main.Constant.KEYBOARD.RIGHT;
-          case 40:
-            return Main.Constant.KEYBOARD.DOWN;
-
-          // Miscellaneous keys.
-          case 19:
-            return Main.Constant.KEYBOARD.PAUSE;
-          case 44:
-            return Main.Constant.KEYBOARD.PRINT_SCREEN;
-
-          // Escape key.
-          case 27:
-            return Main.Constant.KEYBOARD.ESC;
+          if(keyboard == 48)
+            return Main.Constant.KEYBOARD.ZERO;
+          else
+            // One through nine.
+            return keyboard - 20;
         }
+        else if((96 <= keyboard) && (keyboard <= 105))
+        // Numpad zero through numpad 9. These are only reported
+        // if Number Lock is on.
+        {
+          if(keyboard == 96)
+            return Main.Constant.KEYBOARD.NUMPAD.ZERO;
+          else
+            return keyboard - 58;
+        }
+        else if((112 <= keyboard) && (keyboard <= 123))
+        // The F1 to F12 keys.
+          return keyboard - 49;
+
+        else
+        // Any other keys. They are less regular, so... SWITCH STATEMENTS!
+        {
+          switch(keyboard)
+          {
+            // Other numpad buttons.
+            case 106:
+              return Main.Constant.KEYBOARD.NUMPAD.ASTERISK;
+            case 110:
+              return Main.Constant.KEYBOARD.NUMPAD.POINT;
+            case 111:
+              return Main.Constant.KEYBOARD.NUMPAD.SLASH;
+
+            // Symbol and punctuation keys.
+            case  59:
+              return Main.Constant.KEYBOARD.SEMICOLON;
+            case 107:
+              return Main.Constant.KEYBOARD.EQUALS_SIGN;
+            case 109:
+              return Main.Constant.KEYBOARD.HYPHEN;
+            case 188:
+              return Main.Constant.KEYBOARD.COMMA;
+            case 190:
+              return Main.Constant.KEYBOARD.PERIOD;
+            case 191:
+              return Main.Constant.KEYBOARD.FORWARDSLASH;
+            case 192:
+              return Main.Constant.KEYBOARD.TILDE;
+            case 219:
+              return Main.Constant.KEYBOARD.LEFT_BRACKET;
+            case 220:
+              return Main.Constant.KEYBOARD.BACKSLASH;
+            case 221:
+              return Main.Constant.KEYBOARD.RIGHT_BRACKET;
+            case 222:
+              return Main.Constant.KEYBOARD.APOSTROPHE;
+
+            // Modifier keys.
+            case 16:
+              return Main.Constant.KEYBOARD.SHIFT;
+            case 17:
+              return Main.Constant.KEYBOARD.CTRL;
+            case 18:
+              return Main.Constant.KEYBOARD.ALT;
+
+            // Windows key.
+            case 91:
+              return Main.Constant.KEYBOARD.WINDOWS;
+
+            // Whitespace keys.
+            case  8:
+              return Main.Constant.KEYBOARD.BACKSPACE;
+            case  9:
+              return Main.Constant.KEYBOARD.TAB;
+            case 13:
+              return Main.Constant.KEYBOARD.ENTER;
+            case 32:
+              return Main.Constant.KEYBOARD.SPACE;
+
+             // Keyboard lock keys.
+            case 20:
+              return Main.Constant.KEYBOARD.CAPS_LOCK;
+            case 145:
+              return Main.Constant.KEYBOARD.SCROLL_LOCK;
+            case 144:
+              return Main.Constant.KEYBOARD.NUM_LOCK;
+
+            // Page keys.
+            case 33:
+              return Main.Constant.KEYBOARD.PAGE_UP;
+            case 34:
+              return Main.Constant.KEYBOARD.PAGE_DOWN;
+            case 35:
+              return Main.Constant.KEYBOARD.END;
+            case 36:
+              return Main.Constant.KEYBOARD.HOME;
+            case 45:
+              return Main.Constant.KEYBOARD.INSERT;
+            case 46:
+              return Main.Constant.KEYBOARD.DELETE;
+
+            // Arrow keys.
+            case 37:
+              return Main.Constant.KEYBOARD.LEFT;
+            case 38:
+              return Main.Constant.KEYBOARD.UP;
+            case 39:
+              return Main.Constant.KEYBOARD.RIGHT;
+            case 40:
+              return Main.Constant.KEYBOARD.DOWN;
+
+            // Miscellaneous keys.
+            case 19:
+              return Main.Constant.KEYBOARD.PAUSE;
+            case 44:
+              return Main.Constant.KEYBOARD.PRINT_SCREEN;
+
+            // Escape key.
+            case 27:
+              return Main.Constant.KEYBOARD.ESC;
+          }
+        }
+      }
+
+      return false;
+    },
+
+    Opera : function (even, state)
+    {
+      if(Main.Browser.opera)
+      {
+        var keyboard = event.keyCode;
+
+        if((65 <= keyboard) && (keyboard <= 90))
+          // A-Z
+          return keyboard - 62;
+
+        else if((97 <= keyboard) && (keyboard <= 122))
+          // a-z
+          return keyboard - 94;
+
+        else if((48 <= keyboard) && (keyboard <= 57))
+        // 0-9 (top of the keyboard). Opera can not detect
+        // numpad presses as distinct from number row presses, so
+        // these will also catch the numpad.
+        {
+          if(keyboard == 48)
+            return Main.Constant.KEYBOARD.ZERO;
+
+          return keyboard - 20;
+        }
+
+        else if((112 <= keyboard) && (keyboard <= 123))
+          // F1-F12.
+          return keyboard - 49;
+
+        else
+        {
+          switch(keyboard)
+          {
+            case 42:
+              return Main.Constant.KEYBORD.NUMPAD.ASTERISK;
+            case 78: // Only with numlock on.
+              return Main.Constant.KEYBOARD.NUMPAD.POINT;
+            case 47:
+              return Main.Constant.KEYBOARD.NUMPAD.SLASH;
+
+            case  59:
+              return Main.Constant.KEYBOARD.SEMICOLON;
+            case  61:
+              return Main.Constant.KEYBOARD.EQUALS_SIGN;
+            case  43:
+              return Main.Constant.KEYBOARD.HYPHEN;
+            case 188:
+              return Main.Constant.KEYBOARD.COMMA;
+            case 190:
+              return Main.Constant.KEYBOARD.PERIOD;
+            case 191:
+              return Main.Constant.KEYBOARD.FORWARDSLASH;
+            case 192:
+              return Main.Constant.KEYBOARD.TILDE;
+            case 219:
+              return Main.Constant.KEYBOARD.LEFT_BRACKET;
+            case 220:
+              return Main.Constant.KEYBOARD.BACKSLASH;
+            case 221:
+              return Main.Constant.KEYBOARD.RIGHT_BRACKET;
+            case 222:
+              return Main.Constant.KEYBOARD.APOSTROPHE;
+
+            case 16:
+              return Main.Constant.KEYBOARD.SHIFT;
+            case 17:
+              return Main.Constant.KEYBOARD.CTRL;
+            case 18:
+              return Main.Constant.KEYBOARD.ALT;
+
+            case  8:
+              return Main.Constant.KEYBOARD.BACKSPACE;
+            case  9:
+              return Main.Constant.KEYBOARD.TAB;
+            case 13:
+              return Main.Constant.KEYBOARD.ENTER;
+            case 32:
+              return Main.Constant.KEYBOARD.SPACE;
+
+            case 20:
+              return Main.Constant.KEYBOARD.CAPS_LOCK;
+            case 145:
+              return Main.Constant.KEYBOARD.SCROLL_LOCK;
+            case 144:
+              return Main.Constant.KEYBOARD.NUM_LOCK;
+
+            case 33:
+              return Main.Constant.KEYBOARD.PAGE_UP;
+            case 34:
+              return Main.Constant.KEYBOARD.PAGE_DOWN;
+            case 35:
+              return Main.Constant.KEYBOARD.END;
+            case 36:
+              return Main.Constant.KEYBOARD.HOME;
+            case 45:
+              return Main.Constant.KEYBOARD.INSERT;
+            case 46:
+              return Main.Constant.KEYBOARD.DELETE;
+
+            case 37:
+              return Main.Constant.KEYBOARD.LEFT;
+            case 38:
+              return Main.Constant.KEYBOARD.UP;
+            case 39:
+              return Main.Constant.KEYBOARD.RIGHT;
+            case 40:
+              return Main.Constant.KEYBOARD.DOWN;
+
+            case 19:
+              return Main.Constant.KEYBOARD.PAUSE;
+
+            case 27:
+              return Main.Constant.KEYBOARD.ESC;
+          }
+        }
+        
       }
 
       return false;

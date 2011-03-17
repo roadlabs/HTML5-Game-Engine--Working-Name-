@@ -1,7 +1,7 @@
 /*
  * File Name: Main.Constants.js
  * Date Written: February 28, 2011
- * Date Last Updated: March 13, 2011
+ * Date Last Updated: March 16, 2011
  * Written By: Timothy "Popisfizzy" Reilly
  * Dependencies: Main.js
  */
@@ -153,19 +153,21 @@ Main.Constant = {
     NINE  : 37,
     ZERO  : 38,
 
-    NUMPAD_ONE      : 39,
-    NUMPAD_TWO      : 40,
-    NUMPAD_THREE    : 41,
-    NUMPAD_FOUR     : 42,
-    NUMPAD_FIVE     : 43,
-    NUMPAD_SIX      : 44,
-    NUMPAD_SEVEN    : 45,
-    NUMPAD_EIGHT    : 46,
-    NUMPAD_NINE     : 47,
-    NUMPAD_ZERO     : 48,
-    NUMPAD_SLASH    : 49,
-    NUMPAD_POINT    : 50,
-    NUMPAD_ASTERISK : 51,
+    NUMPAD : {
+      ONE      : 39,
+      TWO      : 40,
+      THREE    : 41,
+      FOUR     : 42,
+      FIVE     : 43,
+      SIX      : 44,
+      SEVEN    : 45,
+      EIGHT    : 46,
+      NINE     : 47,
+      ZERO     : 48,
+      SLASH    : 49,
+      POINT    : 50,
+      ASTERISK : 51
+    },
 
     TILDE         : 52,
     HYPHEN        : 53,
